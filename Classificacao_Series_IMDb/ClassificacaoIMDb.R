@@ -2,9 +2,10 @@
 setwd('.')
 rm(list=ls())
 
-# Código da Série
 # Explicação da base de dados - https://www.imdb.com/interfaces/
 # Base de dados - https://datasets.imdbws.com/
+
+# Código da Série
 codSerie <- 'tt1751105' # My Little Poney: Friendship is Magic
 
 # Importar rating (classificação de episódios) 
@@ -28,9 +29,12 @@ meanRating <- aggregate(averageRating ~ parentTconst, meanRating, mean)
 meanRating <- meanRating[order(-meanRating$averageRating),]
 
 # Cálculos das médias A, B e C
-mediaCurvaA <- mean(meanRating[1:(nrow(meanRating)*0.2),]$averageRating)
-mediaCurvaB <- mean(meanRating[1:(nrow(meanRating)*0.3),]$averageRating)
-mediaCurvaC <- mean(meanRating[1:(nrow(meanRating)*0.5),]$averageRating)
+nrow <- nrow(meanRating)
+limitA <- nrow*0.2
+limitB <- nrow*0.5
+mediaCurvaA <- mean(meanRating[1:limitA,]$averageRating)
+mediaCurvaB <- mean(meanRating[limitA:limitB,]$averageRating)
+mediaCurvaC <- mean(meanRating[limitB:nrow,]$averageRating)
 # Cálculo da média da série
 mediaSerie <- meanRating[meanRating$parentTconst == codSerie,]$averageRating
 
@@ -63,6 +67,7 @@ mediaTemporada$Category = as.integer(mediaTemporada$Category)
 colnames(mediaTemporada) <- c('seasonNumber', 'averageRating')
 
 # Geração de gráfico por temporadas
+rainbow <- rainbow(5)
 ggplot(mediaTemporada, aes(x=seasonNumber, y=averageRating)) +
     labs(x = "Temporada", y = "Média de pontuação") +
     geom_line(color=rainbow[1]) +
